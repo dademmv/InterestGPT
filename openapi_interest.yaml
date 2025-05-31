@@ -5,14 +5,15 @@ info:
   description: API che restituisce la knowledge base aggiornata dell'associazione Interest Edufin ETS.
 servers:
   - url: https://interest-api.onrender.com
+    description: API live su Render per InterestGPT
 paths:
   /knowledge:
     get:
-      summary: Restituisce i dati principali dell'associazione Interest Edufin ETS
-      operationId: knowledge
+      summary: Ottieni la knowledge base aggiornata
+      operationId: getKnowledge
       responses:
         '200':
-          description: Dati restituiti con successo
+          description: Risposta con dati strutturati
           content:
             application/json:
               schema:
@@ -20,44 +21,34 @@ paths:
                 properties:
                   fundraising:
                     type: object
-                    description: Informazioni sulle strategie di raccolta fondi
                     properties:
                       priorita:
                         type: string
-                        description: Priorità di raccolta fondi
                       note:
                         type: string
-                        description: Annotazioni aggiuntive
                   governance:
                     type: object
-                    description: Struttura di governance attuale
                     properties:
                       presidente:
                         type: string
-                        description: Nome del presidente
                       CTS:
                         type: array
-                        description: Membri del comitato tecnico-scientifico
                         items:
                           type: string
                   progetti:
                     type: array
-                    description: Lista dei progetti attivi
                     items:
                       type: object
                       properties:
                         nome:
                           type: string
-                          description: Nome del progetto
                         partner:
                           type: array
-                          description: Partner coinvolti
                           items:
                             type: string
                         target:
                           type: string
-                          description: Destinatari del progetto
                         note:
                           type: string
-                          description: Note descrittive
+
 
