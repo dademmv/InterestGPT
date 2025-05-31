@@ -1,0 +1,44 @@
+openapi: 3.0.0
+info:
+  title: Interest Edufin Knowledge API
+  version: 1.1.0
+  description: API per leggere e aggiornare la knowledge base dell'associazione Interest Edufin ETS.
+servers:
+  - url: https://interestgpt.onrender.com
+paths:
+  /knowledge:
+    get:
+      summary: Ottieni la knowledge base aggiornata
+      operationId: getKnowledge
+      responses:
+        '200':
+          description: Risposta con i dati
+          content:
+            application/json:
+              schema:
+                type: object
+  /knowledge/update:
+    post:
+      summary: Aggiorna la knowledge base con nuovi dati
+      operationId: updateKnowledge
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                categoria:
+                  type: string
+                  example: progetti
+                nuovo_valore:
+                  type: object
+                  example:
+                    nome: Progetto Palermo
+                    note: Partito nel 2025 con le scuole medie
+                    partner:
+                      - Comune di Palermo
+                    target: Scuole medie
+      responses:
+        '200':
+          description: Aggiornamento avvenuto con successo
