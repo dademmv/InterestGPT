@@ -1,0 +1,17 @@
+{
+  "schema_version": "v1",
+  "name_for_human": "Interest Knowledge Updater",
+  "name_for_model": "interest_knowledge_updater",
+  "description_for_human": "Aggiorna i dati di Interest Edufin automaticamente.",
+  "description_for_model": "Usa questo plugin per aggiornare automaticamente i dati JSON di Interest Edufin tramite una API REST.",
+  "auth": {
+    "type": "none"
+  },
+  "api": {
+    "type": "openapi",
+    "url": "https://tuo-api.onrender.com/openapi.yaml"
+  },
+  "logo_url": "https://tuo-sito/logo.png",
+  "contact_email": "team@buildinterest.it",
+  "legal_info_url": "https://tuo-sito/legal"
+}
