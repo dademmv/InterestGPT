@@ -1,27 +1,35 @@
-from flask import Flask, request, jsonify, send_from_directory
+from flask import Flask, jsonify, request
 import os
+import json
 
 app = Flask(__name__)
 
-# Knowledge base in memoria
-knowledge_base = {
-    "progetti": [
-        {
-            "nome": "Finance for Schools",
-            "partner": ["Starting Finance", "Italicamp"],
-            "target": "Scuole secondarie",
-            "note": "Seminari + contenuti digitali"
+# Percorso file JSON dove salvi i dati
+DATA_FILE = "knowledge.json"
+
+# Se esiste il file, carica i dati, altrimenti usa quelli base
+if os.path.exists(DATA_FILE):
+    with open(DATA_FILE, "r") as f:
+        knowledge = json.load(f)
+else:
+    knowledge = {
+        "progetti": [
+            {
+                "nome": "Finance for Schools",
+                "partner": ["Italiacamp", "Starting Finance"],
+                "target": "Scuole secondarie",
+                "note": "Seminari + contenuti digitali"
+            }
+        ],
+        "governance": {
+            "presidente": "Davide Franchini",
+            "CTS": ["Marcella Panucci", "Matteo Petrella"]
+        },
+        "fundraising": {
+            "priorita": "5x1000, micro-donazioni, bandi piccoli",
+            "note": "Evitare fondazioni troppo grandi come Cariplo"
         }
-    ],
-    "governance": {
-        "presidente": "Davide Franchini",
-        "CTS": ["Marcella Panucci", "Matteo Petrella","Tommaso Pazienza","Antonio Cilento","Francesco Armillei"]
-    },
-    "fundraising": {
-        "priorita": "5x1000, micro-donazioni, bandi piccoli",
-        "note": "Evitare fondazioni troppo grandi"
     }
-}
 
 @app.route("/")
 def home():
@@ -29,7 +37,7 @@ def home():
 
 @app.route("/knowledge", methods=["GET"])
 def get_knowledge():
-    return jsonify(knowledge_base)
+    return jsonify(knowledge)
 
 @app.route("/knowledge/update", methods=["POST"])
 def update_knowledge():
@@ -37,29 +45,40 @@ def update_knowledge():
     categoria = content.get("categoria")
     nuovo_valore = content.get("nuovo_valore")
 
-    if categoria not in knowledge_base:
-        return jsonify({"errore": "Categoria non valida"}), 400
-
-    if isinstance(knowledge_base[categoria], dict):
-        if not isinstance(nuovo_valore, dict):
-            return jsonify({"errore": "Valore non valido per dizionario"}), 400
-        knowledge_base[categoria].update(nuovo_valore)
-
-    elif isinstance(knowledge_base[categoria], list):
-        knowledge_base[categoria].append(nuovo_valore)
+    if categoria in knowledge:
+        if isinstance(knowledge[categoria], list):
+            knowledge[categoria].append(nuovo_valore)
+        elif isinstance(knowledge[categoria], dict):
+            knowledge[categoria].update(nuovo_valore)
+        with open(DATA_FILE, "w") as f:
+            json.dump(knowledge, f)
+        return jsonify({"status": "ok", "updated": nuovo_valore})
     else:
-        return jsonify({"errore": "Tipo di categoria non gestita"}), 400
+        return jsonify({"error": "Categoria non valida"}), 400
 
-    return jsonify({"messaggio": "Knowledge aggiornata con successo"}), 200
+@app.route("/knowledge/delete", methods=["DELETE"])
+def delete_knowledge():
+    content = request.json
+    categoria = content.get("categoria")
+    criterio = content.get("criterio")
 
-# Endpoint per esporre i file del plugin
-@app.route("/.well-known/ai-plugin.json")
-def serve_ai_plugin():
-    return send_from_directory('.', "ai-plugin.json", mimetype="application/json")
+    if categoria not in knowledge:
+        return jsonify({"error": "Categoria non valida"}), 400
 
-@app.route("/openapi.yaml")
-def serve_openapi():
-    return send_from_directory('.', "openapi.yaml", mimetype="text/yaml")
+    if isinstance(knowledge[categoria], list):
+        before = len(knowledge[categoria])
+        knowledge[categoria] = [el for el in knowledge[categoria] if not all(el.get(k) == v for k, v in criterio.items())]
+        after = len(knowledge[categoria])
+        if before == after:
+            return jsonify({"status": "niente da eliminare"}), 404
+    elif isinstance(knowledge[categoria], dict):
+        for k in list(criterio.keys()):
+            knowledge[categoria].pop(k, None)
+
+    with open(DATA_FILE, "w") as f:
+        json.dump(knowledge, f)
+
+    return jsonify({"status": "ok", "deleted": criterio})
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
