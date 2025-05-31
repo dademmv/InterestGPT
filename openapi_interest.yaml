@@ -4,7 +4,7 @@ info:
   version: 1.0.0
   description: API che restituisce la knowledge base aggiornata dell'associazione Interest Edufin ETS.
 servers:
-  - url: https://interest-api.onrender.com
+  - url: https://interestgpt.onrender.com
     description: API live su Render per InterestGPT
 paths:
   /knowledge:
@@ -50,5 +50,3 @@ paths:
                           type: string
                         note:
                           type: string
-
-
