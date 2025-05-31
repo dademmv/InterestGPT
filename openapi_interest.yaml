@@ -17,6 +17,38 @@ paths:
             application/json:
               schema:
                 type: object
+                properties:
+                  fundraising:
+                    type: object
+                    properties:
+                      priorita:
+                        type: string
+                      note:
+                        type: string
+                  governance:
+                    type: object
+                    properties:
+                      presidente:
+                        type: string
+                      CTS:
+                        type: array
+                        items:
+                          type: string
+                  progetti:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        nome:
+                          type: string
+                        partner:
+                          type: array
+                          items:
+                            type: string
+                        target:
+                          type: string
+                        note:
+                          type: string
 
   /knowledge/update:
     post:
